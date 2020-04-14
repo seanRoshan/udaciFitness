@@ -107,7 +107,7 @@ class AddEntry extends Component {
             return (
                 <View style={styles.center}>
                     <Ionicons
-                        name={Platform.OS === 'ios' ? 'ios-happy':'md-happy'}
+                        name={Platform.OS === 'ios' ? 'ios-happy' : 'md-happy'}
                         size={100}
                     />
                     <Text>You already logged your information for today!</Text>
@@ -170,10 +170,10 @@ const styles = StyleSheet.create({
     androidSubmitBtn: {
         backgroundColor: purple,
         padding: 10,
-        borderRadius: 2,
+        paddingLeft: 30,
+        paddingRight: 30,
         height: 45,
-        marginLeft: 30,
-        marginRight: 30,
+        borderRadius: 2,
         alignSelf: 'flex-end',
         justifyContent: 'center'
     },
