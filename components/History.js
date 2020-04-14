@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {StyleSheet, Text, View} from 'react-native'
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import {connect} from 'react-redux'
 import {addEntry, receiveEntries} from '../actions'
 import {getDailyReminderValue, timeToString} from '../utils/helpers'
@@ -7,7 +7,7 @@ import {fetchCalendarResults} from '../utils/api'
 import UdaciFitnessCalendar from 'udacifitness-calendar'
 import {white} from "../utils/colors";
 import DateHeader from "./DateHeader";
-import TouchableOpacity from "react-native-web/dist/exports/TouchableOpacity";
+import MetricCard from "./MetricCard";
 
 class History extends Component {
     componentDidMount() {
@@ -35,9 +35,8 @@ class History extends Component {
                     </Text>
                 </View>
                 : <TouchableOpacity
-                    onPress={() => console.log('Pressed!')}
-                >
-                    <Text>{JSON.stringify(metrics)}</Text>
+                    onPress={() => console.log('Pressed!')}>
+                    <MetricCard date={formattedDate} metrics={metrics}/>
                 </TouchableOpacity>}
         </View>
     )
