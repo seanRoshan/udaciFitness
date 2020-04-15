@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import 'react-native-gesture-handler';
-import {Platform, StatusBar, View, Dimensions} from 'react-native';
+import {Dimensions, Platform, StatusBar, View} from 'react-native';
 import {createStore} from "redux";
 import reducer from './reducers';
 import {Provider} from "react-redux";
@@ -14,6 +14,7 @@ import {FontAwesome, Ionicons} from "@expo/vector-icons";
 import Constants from "expo-constants";
 import {createStackNavigator} from '@react-navigation/stack';
 import EntryDetail from "./components/EntryDetail";
+import Live from "./components/Live";
 
 
 function UdaciStatusBar({backgroundColor, ...props}) {
@@ -36,25 +37,27 @@ const TabNav = () => (
         initialRouteName="AddEntry"
         screenOptions={({route}) => ({
             tabBarIcon: ({color, size}) => {
-                let icon;
-                if (route.name === "Add Entry") {
-                    icon = (
-                        <FontAwesome name="plus-square" size={size} color={color}/>
-                    );
-                } else if (route.name === "History") {
-                    icon = (
-                        <Ionicons name="ios-bookmarks" size={size} color={color}/>
-                    );
+                switch (route.name) {
+                    case "Add Entry": {
+                        return <FontAwesome name="plus-square" size={size} color={color}/>
+                    }
+                    case "History": {
+                        return <Ionicons name="ios-bookmarks" size={size} color={color}/>
+                    }
+                    case "Live": {
+                        return <Ionicons name="ios-speedometer" size={size} color={color}/>
+                    }
+                    default:
+                        return ""
                 }
-                return icon;
             }
         })}
         tabBarOptions={{
             header: null,
             activeTintColor: Platform.OS === "ios" ? purple : white,
-            showIcon: true,
+            showIcon: Platform.OS === "ios",
             style: {
-                height: 80,
+                height: Platform.OS === "ios" ? 80 : 50,
                 backgroundColor: Platform.OS === "ios" ? white : purple,
                 shadowColor: "rgba(0, 0, 0, 0.24)",
                 shadowOffset: {
@@ -68,6 +71,7 @@ const TabNav = () => (
     >
         <Tabs.Screen name="Add Entry" component={AddEntry}/>
         <Tabs.Screen name="History" component={History}/>
+        <Tabs.Screen name="Live" component={Live}/>
     </Tabs.Navigator>
 );
 
@@ -87,7 +91,7 @@ const MainNav = () => (
                 headerStyle: {
                     backgroundColor: purple,
                 },
-                headerTitleStyle: { width: Dimensions.get("window").width }
+                headerTitleStyle: {width: Dimensions.get("window").width}
             }}/>
     </Stack.Navigator>
 );
