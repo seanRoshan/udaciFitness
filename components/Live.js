@@ -1,19 +1,68 @@
-import React, { Component } from 'react'
-import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native'
-import { Foundation } from '@expo/vector-icons'
-import { purple, white } from '../utils/colors'
+import React, {Component} from 'react'
+import {ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
+import {Foundation} from '@expo/vector-icons'
+import {purple, white} from '../utils/colors'
+import * as Location from 'expo-location';
+import {Accuracy} from 'expo-location';
+import * as Permissions from 'expo-permissions'
+import {calculateDirection} from "../utils/helpers";
 
 export default class Live extends Component {
     state = {
-        coords: null,
+        coords: {},
         status: 'granted',
         direction: ''
     }
     askPermission = () => {
+        Permissions.askAsync(Permissions.LOCATION)
+            .then(({status}) => {
+                if (status === 'granted') {
+                    return this.setLocation();
+                }
+
+                this.setState(() => ({status}));
+            }).catch((error) => {
+            this.setState(() => ({
+                status: 'undetermined'
+            }));
+            console.warn('Error asking Location permission', error);
+        });
+    }
+
+    setLocation = () => {
+        Location.watchPositionAsync({
+                accuracy: Accuracy.High,
+                timeInterval: 1,
+                distanceInterval: 1,
+            }, ({coords}) => {
+                console.log(coords);
+                const newDirection = calculateDirection(coords.heading);
+                this.setState(() => ({
+                    coords: coords,
+                    direction: newDirection
+                }));
+            }
+        )
+    }
+
+    componentDidMount() {
+        Permissions.getAsync(Permissions.LOCATION)
+            .then(({status}) => {
+                if (status === 'granted') {
+                    return this.setLocation();
+                }
+                this.setState(() => ({status}));
+            }).catch((error) => {
+            this.setState(() => ({
+                status: 'undetermined'
+            }));
+            console.warn('Error getting Location permission', error);
+        })
 
     }
+
     render() {
-        const { status, coords, direction } = this.state
+        const {status, coords, direction} = this.state
 
         if (status === null) {
             return <ActivityIndicator style={{marginTop: 30}}/>
@@ -22,9 +71,10 @@ export default class Live extends Component {
         if (status === 'denied') {
             return (
                 <View style={styles.center}>
-                    <Foundation name='alert' size={50} />
+                    <Foundation name='alert' size={50}/>
                     <Text>
-                        You denied your location. You can fix this by visiting your settings and enabling location services for this app.
+                        You denied your location. You can fix this by visiting your settings and enabling location
+                        services for this app.
                     </Text>
                 </View>
             )
@@ -33,7 +83,7 @@ export default class Live extends Component {
         if (status === 'undetermined') {
             return (
                 <View style={styles.center}>
-                    <Foundation name='alert' size={50} />
+                    <Foundation name='alert' size={50}/>
                     <Text>
                         You need to enable location services for this app.
                     </Text>
@@ -51,7 +101,7 @@ export default class Live extends Component {
                 <View style={styles.directionContainer}>
                     <Text style={styles.header}>You're heading</Text>
                     <Text style={styles.direction}>
-                        North
+                        {direction}
                     </Text>
                 </View>
                 <View style={styles.metricContainer}>
@@ -60,7 +110,7 @@ export default class Live extends Component {
                             Altitude
                         </Text>
                         <Text style={[styles.subHeader, {color: white}]}>
-                            {200} feet
+                            {Math.round(coords ? coords.altitude * 3.2808 : 0)} feet
                         </Text>
                     </View>
                     <View style={styles.metric}>
@@ -68,7 +118,7 @@ export default class Live extends Component {
                             Speed
                         </Text>
                         <Text style={[styles.subHeader, {color: white}]}>
-                            {300} MPH
+                            {coords ? (coords.speed*2.2369).toFixed(1) : 0} MPH
                         </Text>
                     </View>
                 </View>
@@ -96,7 +146,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         margin: 20,
     },
-    buttonText :{
+    buttonText: {
         color: white,
         fontSize: 20,
     },
