@@ -18,7 +18,7 @@ function MetricCard({date, metrics}) {
                             {displayName}
                         </Text>
                         <Text style={{fontSize: 16, color: gray}}>
-                            {metrics[metric]}{unit}
+                            {metrics[metric]} {unit}
                         </Text>
                     </View>
                 </View>)
@@ -30,7 +30,7 @@ function MetricCard({date, metrics}) {
 const styles = StyleSheet.create({
     metric: {
         flexDirection: 'row',
-        marginTop: 12
+        marginTop: 12,
     }
 });
 
