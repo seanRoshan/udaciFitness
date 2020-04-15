@@ -23,3 +23,5 @@ export function removeEntry(key) {
             AsyncStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(data));
         })
 }
+
+
